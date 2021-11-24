@@ -8,18 +8,20 @@
  *
  * @author cesar
  */
-public class Productos {
-    int idProductos;
-    String descripcion;
+public class Pizza {
+    //Pizza: Nombre del producto, tamaño, precio, existencia.
+    String nombrePizza;
+    int tamaño;
     float precio;
     int existencia;
     
-    public Productos(String descripcion, float precio, int existencia){
-        this.descripcion = descripcion;
+    public Pizza(String nombrePizza, int tamaño, float precio, int existencia){
+        this.nombrePizza = nombrePizza;
+        this.tamaño = tamaño;
         this.precio = precio;
         this.existencia = existencia;
     }
     
-    public Productos(){}
-            
+    public Pizza(){}
+    
 }

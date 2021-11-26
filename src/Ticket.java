@@ -13,11 +13,13 @@ public class Ticket {
     int numOrden;
     String productos;
     int cantidadProductos;
+    float costoTotal;
     
-    public Ticket(int numOrden, String producto, int cantidadProductos){
+    public Ticket(int numOrden, String producto, int cantidadProductos, float costoTotal){
         this.numOrden = numOrden;
         this.productos = producto;
         this.cantidadProductos = cantidadProductos;
+        this.costoTotal = costoTotal;
     }
     
     public Ticket(){}

@@ -5,10 +5,9 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Arrays;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -44,9 +43,8 @@ public class Ventana extends javax.swing.JFrame {
         }
     };
 
-    DefaultComboBoxModel modelo3 = new DefaultComboBoxModel();
-
-    String idHawaiana = "619e3c334e8f711302ed2720";
+    ArrayList<JComboBox> nombrePizza = new ArrayList<>();
+    //ArrayList<JComboBox> tamañoPizza = new ArrayList<>();
 
     public Ventana() {
         initComponents();
@@ -54,6 +52,21 @@ public class Ventana extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setResizable(false);
 
+        nombrePizza.add(jComboBox1);
+        nombrePizza.add(jComboBox4);
+        nombrePizza.add(jComboBox7);
+        nombrePizza.add(jComboBox9);
+        nombrePizza.add(jComboBox10);
+        nombrePizza.add(jComboBox13);
+
+        /*
+        tamañoPizza.add(jComboBox2);
+        tamañoPizza.add(jComboBox5);
+        tamañoPizza.add(jComboBox6);
+        tamañoPizza.add(jComboBox8);
+        tamañoPizza.add(jComboBox11);
+        tamañoPizza.add(jComboBox12);
+         */
         modelo.addColumn("ID PIZZA");
         modelo.addColumn("NOMBRE");
         modelo.addColumn("TAMAÑO");
@@ -62,10 +75,8 @@ public class Ventana extends javax.swing.JFrame {
         jTable1.setModel(modelo);
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(140);
 
-        jComboBox1.setModel(modelo3);
-
         actualizarTabla();
-        actualizarPedido(idHawaiana);
+        actualizarPedido();
 
         modelo2.addColumn("ID TICKET");
         modelo2.addColumn("NOMBRE");
@@ -74,6 +85,7 @@ public class Ventana extends javax.swing.JFrame {
         jTable2.setModel(modelo2);
 
         escalarImagen(jLabelLogo, "logo");
+
     }
 
     public final void escalarImagen(JLabel label, String imagen) {
@@ -87,7 +99,7 @@ public class Ventana extends javax.swing.JFrame {
 
         MongoCursor<Document> consulta = pizza.find().iterator();
 
-        int totalRenglones = modelo.getRowCount(), x = 0;
+        int totalRenglones = modelo.getRowCount();
 
         for (int i = 0; i < totalRenglones; i++) {
             modelo.removeRow(0);
@@ -96,48 +108,34 @@ public class Ventana extends javax.swing.JFrame {
         while (consulta.hasNext()) {
             ArrayList<Object> doc = new ArrayList<>(consulta.next().values());
             modelo.addRow(doc.toArray());
-            switch (modelo.getValueAt(modelo.getRowCount() - 1, 2).toString()) {
-                case "1":
-                    modelo.setValueAt("Familiar", x, 2);
-                    break;
-                case "2":
-                    modelo.setValueAt("Mediana", x, 2);
-                    break;
-                case "3":
-                    modelo.setValueAt("Personal", x, 2);
-                    break;
-            }
-            x++;
         }
-
-        /*
-            String nombre = "619e3c334e8f711302ed2720";
-            Document filtro2 = new Document("_id", new ObjectId(nombre));
-            Document resultado = pizza.find(filtro2).first();
-            modelo3.addElement(resultado.getString("NOMBRE"));
-            jComboBox1.setModel(modelo3);
-            jLabel11.setText(resultado.getDouble("PRECIO").toString());
-            jLabel12.setText(resultado.getInteger("EXISTENCIA").toString());
-         */
     }
 
-    public void actualizarPedido(String idPizza) {
-        String nombre = "hawaiana";
-        Document filtro2 = new Document("_id", nombre);
+    public void actualizarPedido() {
+        int totalRenglones = modelo.getRowCount();
 
-        MongoCursor<Document> resultado = pizza.find().iterator();
-        
-        while(resultado.hasNext()){
-            ArrayList<Object> doc = new ArrayList<>(resultado.next().values());
-            switch (resultado.next().getString("NOMBRE")) {
-                case "Hawaiana":
-                    System.out.println(resultado.next().getInteger("TAMAÑO").toString());
-                    //modelo3.addElement(resultado.next().getInteger("TAMAÑO").toString());
-                break;
+        for (int i = 0; i < nombrePizza.size(); i++) {
+            nombrePizza.get(i).removeAllItems();
+            for (int j = 0; j < totalRenglones; j++) {
+                if (nombrePizza.get(i).getItemCount() == 0) {
+                    nombrePizza.get(i).addItem(modelo.getValueAt(j, 1).toString());
+                }
+
+                if (!estaRepetido(modelo.getValueAt(j, 1).toString(), nombrePizza.get(i))) {
+                    nombrePizza.get(i).addItem(modelo.getValueAt(j, 1).toString());
+                }
             }
         }
-        
-        
+    }
+
+    public boolean estaRepetido(String item, JComboBox combo) {
+
+        for (int i = 0; i < combo.getItemCount(); i++) {
+            if (combo.getItemAt(i).equals(item)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -172,17 +170,42 @@ public class Ventana extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBox2 = new javax.swing.JCheckBox();
+        jComboBox4 = new javax.swing.JComboBox<>();
+        jComboBox5 = new javax.swing.JComboBox<>();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jComboBox6 = new javax.swing.JComboBox<>();
+        jCheckBox3 = new javax.swing.JCheckBox();
+        jComboBox7 = new javax.swing.JComboBox<>();
+        jLabel23 = new javax.swing.JLabel();
+        jCheckBox4 = new javax.swing.JCheckBox();
+        jComboBox8 = new javax.swing.JComboBox<>();
+        jComboBox9 = new javax.swing.JComboBox<>();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jComboBox10 = new javax.swing.JComboBox<>();
+        jLabel26 = new javax.swing.JLabel();
+        jComboBox11 = new javax.swing.JComboBox<>();
+        jCheckBox5 = new javax.swing.JCheckBox();
+        jLabel27 = new javax.swing.JLabel();
+        jComboBox12 = new javax.swing.JComboBox<>();
+        jComboBox13 = new javax.swing.JComboBox<>();
+        jLabel28 = new javax.swing.JLabel();
+        jCheckBox6 = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jTextFieldNombre = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextFieldTamaño = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jTextFieldPrecio = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jTextFieldExistencia = new javax.swing.JTextField();
         jButtonInsertar = new javax.swing.JButton();
+        jComboBoxTamaño = new javax.swing.JComboBox<>();
         jPanel15 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
@@ -202,7 +225,7 @@ public class Ventana extends javax.swing.JFrame {
         jPanel12 = new javax.swing.JPanel();
         jTextField4 = new javax.swing.JTextField();
         jPanel13 = new javax.swing.JPanel();
-        jTextField5 = new javax.swing.JTextField();
+        jComboBox3 = new javax.swing.JComboBox<>();
         jPanel14 = new javax.swing.JPanel();
         jTextField6 = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
@@ -330,7 +353,12 @@ public class Ventana extends javax.swing.JFrame {
 
         jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "FAMILIAR", "MEDIANA", "PERSONAL" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TAMAÑO" }));
+        jComboBox2.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox2ItemStateChanged(evt);
+            }
+        });
 
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel11.setText("PRECIO");
@@ -339,8 +367,123 @@ public class Ventana extends javax.swing.JFrame {
         jLabel12.setText("EXISTENCIA");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIZZA" }));
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
 
         jCheckBox1.setText("SELECCIONAR");
+
+        jCheckBox2.setText("SELECCIONAR");
+
+        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIZZA" }));
+        jComboBox4.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox4ItemStateChanged(evt);
+            }
+        });
+
+        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TAMAÑO" }));
+        jComboBox5.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox5ItemStateChanged(evt);
+            }
+        });
+
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel19.setText("PRECIO");
+
+        jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel20.setText("EXISTENCIA");
+
+        jLabel21.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel21.setText("PRECIO");
+
+        jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel22.setText("EXISTENCIA");
+
+        jComboBox6.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TAMAÑO" }));
+        jComboBox6.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox6ItemStateChanged(evt);
+            }
+        });
+
+        jCheckBox3.setText("SELECCIONAR");
+
+        jComboBox7.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIZZA" }));
+        jComboBox7.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox7ItemStateChanged(evt);
+            }
+        });
+
+        jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel23.setText("PRECIO");
+
+        jCheckBox4.setText("SELECCIONAR");
+
+        jComboBox8.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TAMAÑO" }));
+        jComboBox8.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox8ItemStateChanged(evt);
+            }
+        });
+
+        jComboBox9.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIZZA" }));
+        jComboBox9.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox9ItemStateChanged(evt);
+            }
+        });
+
+        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel24.setText("EXISTENCIA");
+
+        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel25.setText("PRECIO");
+
+        jComboBox10.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIZZA" }));
+        jComboBox10.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox10ItemStateChanged(evt);
+            }
+        });
+
+        jLabel26.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel26.setText("EXISTENCIA");
+
+        jComboBox11.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TAMAÑO" }));
+        jComboBox11.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox11ItemStateChanged(evt);
+            }
+        });
+
+        jCheckBox5.setText("SELECCIONAR");
+
+        jLabel27.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel27.setText("EXISTENCIA");
+
+        jComboBox12.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TAMAÑO" }));
+        jComboBox12.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox12ItemStateChanged(evt);
+            }
+        });
+
+        jComboBox13.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIZZA" }));
+        jComboBox13.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox13ItemStateChanged(evt);
+            }
+        });
+
+        jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel28.setText("PRECIO");
+
+        jCheckBox6.setText("SELECCIONAR");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
@@ -348,15 +491,67 @@ public class Ventana extends javax.swing.JFrame {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jCheckBox1)
-                .addGap(18, 18, 18)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel12)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox6)
+                        .addGap(14, 14, 14)
+                        .addComponent(jComboBox13, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox12, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel27))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox5)
+                        .addGap(14, 14, 14)
+                        .addComponent(jComboBox10, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox11, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel26))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox4)
+                        .addGap(14, 14, 14)
+                        .addComponent(jComboBox9, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox8, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel24))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox3)
+                        .addGap(14, 14, 14)
+                        .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel22))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox2)
+                        .addGap(14, 14, 14)
+                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel20))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jCheckBox1)
+                        .addGap(14, 14, 14)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel12)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel8Layout.setVerticalGroup(
@@ -369,7 +564,42 @@ public class Ventana extends javax.swing.JFrame {
                     .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCheckBox1))
-                .addContainerGap(186, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBox2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBox3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(jComboBox8, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBox4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(jComboBox11, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox10, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBox5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
+                    .addComponent(jComboBox12, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jComboBox13, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCheckBox6))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -421,6 +651,8 @@ public class Ventana extends javax.swing.JFrame {
             }
         });
 
+        jComboBoxTamaño.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Familiar", "Mediana", "Personal" }));
+
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
@@ -433,7 +665,7 @@ public class Ventana extends javax.swing.JFrame {
                             .addGroup(jPanel9Layout.createSequentialGroup()
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextFieldPrecio))
+                                .addComponent(jTextFieldPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel9Layout.createSequentialGroup()
                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -444,9 +676,9 @@ public class Ventana extends javax.swing.JFrame {
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextFieldNombre, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldTamaño, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextFieldNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                            .addComponent(jComboBoxTamaño, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonInsertar, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28))))
@@ -455,29 +687,27 @@ public class Ventana extends javax.swing.JFrame {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextFieldTamaño, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonInsertar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(45, 45, 45)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonInsertar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboBoxTamaño, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextFieldPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldPrecio, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldExistencia, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(15, 15, 15))
         );
 
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel13.setText("GRANDE:");
+        jLabel13.setText("FAMILIAR:");
 
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel14.setText("MEDIANA:");
@@ -543,8 +773,8 @@ public class Ventana extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(268, Short.MAX_VALUE))
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(264, 264, 264))
         );
 
         jTabbedPane1.addTab("INSERTAR PIZZA", jPanel2);
@@ -576,8 +806,8 @@ public class Ventana extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(329, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(199, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("CONSULTAR PIZZAS", jPanel3);
@@ -624,15 +854,17 @@ public class Ventana extends javax.swing.JFrame {
 
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Tamaño"));
 
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Familiar", "Mediana", "Personal" }));
+
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jComboBox3, 0, 113, Short.MAX_VALUE)
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jComboBox3, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
         );
 
         jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Precio"));
@@ -780,14 +1012,15 @@ public class Ventana extends javax.swing.JFrame {
         try {
             Document data = new Document();
             data.put("NOMBRE", jTextFieldNombre.getText());
-            data.put("TAMAÑO", Integer.parseInt(jTextFieldTamaño.getText()));
+            data.put("TAMAÑO", jComboBoxTamaño.getSelectedItem());
             data.put("PRECIO", Float.parseFloat(jTextFieldPrecio.getText()));
             data.put("EXISTENCIA", Integer.parseInt(jTextFieldExistencia.getText()));
 
             pizza.insertOne(data);
             actualizarTabla();
+            actualizarPedido();
             jTextFieldNombre.setText("");
-            jTextFieldTamaño.setText("");
+            jComboBoxTamaño.setSelectedItem(1);
             jTextFieldPrecio.setText("");
             jTextFieldExistencia.setText("");
 
@@ -806,9 +1039,7 @@ public class Ventana extends javax.swing.JFrame {
                 Document datosActualizados = new Document();
 
                 datosActualizados.put("NOMBRE", jTextField3.getText());
-                if (jTextField5.getText().equals("MEDIANA")) {
-                    datosActualizados.put("TAMAÑO", 1);
-                }
+                datosActualizados.put("TAMAÑO", jComboBox3.getSelectedItem());
                 datosActualizados.put("PRECIO", Float.parseFloat(jTextField6.getText()));
                 datosActualizados.put("EXISTENCIA", Integer.parseInt(jTextField4.getText()));
 
@@ -816,10 +1047,11 @@ public class Ventana extends javax.swing.JFrame {
 
                 if (resUpdate.getMatchedCount() == 1) {
                     jTextField3.setText("");
-                    jTextField5.setText("");
+                    jComboBox3.setSelectedIndex(1);
                     jTextField6.setText("");
                     jTextField4.setText("");
                     actualizarTabla();
+                    actualizarPedido();
                 } else {
                     JOptionPane.showMessageDialog(this, "ERROR, NO SE PUDO BORRAR");
                 }
@@ -835,7 +1067,7 @@ public class Ventana extends javax.swing.JFrame {
         filtro.clear();
 
         jTextField3.setText("");
-        jTextField5.setText("");
+        jComboBox3.setSelectedIndex(1);
         jTextField6.setText("");
         jTextField4.setText("");
     }//GEN-LAST:event_jButtonCancelarActionPerformed
@@ -851,17 +1083,13 @@ public class Ventana extends javax.swing.JFrame {
 
         String id = modelo.getValueAt(renglonSeleccionado, 0).toString();
 
-        int res = JOptionPane.showConfirmDialog(this, "ESTA SEGURO DE ACTUALIZAR EL REGISTRO?", "Confirmar actualizacion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        if (res == 0) {
-            this.jTabbedPane1.setSelectedIndex(3);
-            filtro = new Document("_id", new ObjectId(id));
-            Document resultado = pizza.find(filtro).first();
-            jTextField3.setText(resultado.getString("NOMBRE"));
-            jTextField5.setText(resultado.getInteger("TAMAÑO").toString());
-            jTextField6.setText(resultado.getDouble("PRECIO").toString());
-            jTextField4.setText(resultado.getInteger("EXISTENCIA").toString());
-        }
+        this.jTabbedPane1.setSelectedIndex(3);
+        filtro = new Document("_id", new ObjectId(id));
+        Document resultado = pizza.find(filtro).first();
+        jTextField3.setText(resultado.getString("NOMBRE"));
+        jComboBox3.setSelectedItem(resultado.getString("TAMAÑO"));
+        jTextField6.setText(resultado.getDouble("PRECIO").toString());
+        jTextField4.setText(resultado.getInteger("EXISTENCIA").toString());
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -888,9 +1116,110 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // INSERTAR
-
+        // PAGAR
+        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox1, jComboBox2);
+        }
+
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jComboBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox2ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jComboBox1, jComboBox2, jLabel11, jLabel12);
+        }
+    }//GEN-LAST:event_jComboBox2ItemStateChanged
+
+    private void jComboBox4ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox4ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox4, jComboBox5);
+        }
+    }//GEN-LAST:event_jComboBox4ItemStateChanged
+
+    private void jComboBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox5ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jComboBox4, jComboBox5, jLabel19, jLabel20);
+        }
+    }//GEN-LAST:event_jComboBox5ItemStateChanged
+
+    private void jComboBox6ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox6ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jComboBox7, jComboBox6, jLabel21, jLabel22);
+        }
+    }//GEN-LAST:event_jComboBox6ItemStateChanged
+
+    private void jComboBox7ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox7ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox7, jComboBox6);
+        }
+    }//GEN-LAST:event_jComboBox7ItemStateChanged
+
+    private void jComboBox8ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox8ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jComboBox9, jComboBox8, jLabel23, jLabel24);
+        }
+    }//GEN-LAST:event_jComboBox8ItemStateChanged
+
+    private void jComboBox9ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox9ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox9, jComboBox8);
+        }
+    }//GEN-LAST:event_jComboBox9ItemStateChanged
+
+    private void jComboBox10ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox10ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox10, jComboBox11);
+        }
+    }//GEN-LAST:event_jComboBox10ItemStateChanged
+
+    private void jComboBox11ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox11ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jComboBox10, jComboBox11, jLabel25, jLabel26);
+        }
+    }//GEN-LAST:event_jComboBox11ItemStateChanged
+
+    private void jComboBox12ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox12ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jComboBox13, jComboBox12, jLabel28, jLabel27);
+        }
+    }//GEN-LAST:event_jComboBox12ItemStateChanged
+
+    private void jComboBox13ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox13ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox13, jComboBox12);
+        }
+    }//GEN-LAST:event_jComboBox13ItemStateChanged
+
+    public void actualizarTamaño(JComboBox comboNombre, JComboBox comboTamaño) {
+        comboTamaño.removeAllItems();
+        MongoCursor<Document> consulta = pizza.find(new Document("NOMBRE", comboNombre.getSelectedItem())).iterator();
+        while (consulta.hasNext()) {
+            Document resultado = consulta.next();
+            comboTamaño.addItem(resultado.getString("TAMAÑO"));
+        }
+    }
+
+    public void actualizarPrecioExistencia(JComboBox comboNombre, JComboBox comboTamaño, JLabel labelPrecio, JLabel jLabelExistencia) {
+        Document consulta = new Document("NOMBRE", comboNombre.getSelectedItem()).append("TAMAÑO", comboTamaño.getSelectedItem());
+        Document doc = pizza.find(consulta).first();
+        labelPrecio.setText(doc.getDouble("PRECIO").toString());
+        jLabelExistencia.setText(doc.getInteger("EXISTENCIA").toString());
+    }
 
     /**
      * @param args the command line arguments
@@ -933,8 +1262,25 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCancelar;
     private javax.swing.JButton jButtonInsertar;
     private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JCheckBox jCheckBox3;
+    private javax.swing.JCheckBox jCheckBox4;
+    private javax.swing.JCheckBox jCheckBox5;
+    private javax.swing.JCheckBox jCheckBox6;
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox10;
+    private javax.swing.JComboBox<String> jComboBox11;
+    private javax.swing.JComboBox<String> jComboBox12;
+    private javax.swing.JComboBox<String> jComboBox13;
     private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JComboBox<String> jComboBox4;
+    private javax.swing.JComboBox<String> jComboBox5;
+    private javax.swing.JComboBox<String> jComboBox6;
+    private javax.swing.JComboBox<String> jComboBox7;
+    private javax.swing.JComboBox<String> jComboBox8;
+    private javax.swing.JComboBox<String> jComboBox9;
+    private javax.swing.JComboBox<String> jComboBoxTamaño;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -944,7 +1290,17 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -981,12 +1337,10 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextFieldExistencia;
     private javax.swing.JTextField jTextFieldNombre;
     private javax.swing.JTextField jTextFieldPrecio;
-    private javax.swing.JTextField jTextFieldTamaño;
     // End of variables declaration//GEN-END:variables
 }

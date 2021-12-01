@@ -4,9 +4,12 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import java.awt.Image;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -45,6 +48,11 @@ public class Ventana extends javax.swing.JFrame {
 
     ArrayList<JComboBox> nombrePizza = new ArrayList<>();
     //ArrayList<JComboBox> tamañoPizza = new ArrayList<>();
+    ArrayList<JCheckBox> seleccion = new ArrayList<>();
+    
+    int j = 1;
+    float precioTotal = 0;
+    Document doc;
 
     public Ventana() {
         initComponents();
@@ -52,6 +60,8 @@ public class Ventana extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setResizable(false);
 
+        escalarImagen(jLabelLogo, "logo");
+        
         nombrePizza.add(jComboBox1);
         nombrePizza.add(jComboBox4);
         nombrePizza.add(jComboBox7);
@@ -67,25 +77,47 @@ public class Ventana extends javax.swing.JFrame {
         tamañoPizza.add(jComboBox11);
         tamañoPizza.add(jComboBox12);
          */
+        
+        seleccion.add(jCheckBox1);
+        seleccion.add(jCheckBox2);
+        seleccion.add(jCheckBox3);
+        seleccion.add(jCheckBox4);
+        seleccion.add(jCheckBox5);
+        seleccion.add(jCheckBox6);
+        
+        nombresCheckBox();
+
         modelo.addColumn("ID PIZZA");
         modelo.addColumn("NOMBRE");
         modelo.addColumn("TAMAÑO");
         modelo.addColumn("PRECIO");
         modelo.addColumn("EXISTENCIA");
-        jTable1.setModel(modelo);
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(140);
 
+        modelo2.addColumn("ID TICKET");
+        
         actualizarTabla();
         actualizarPedido();
-
-        modelo2.addColumn("ID TICKET");
-        modelo2.addColumn("NOMBRE");
-        modelo2.addColumn("CANTIDAD");
-        modelo2.addColumn("COSTO TOTAL");
+        actualizarHistorial();
+        
+        jTable1.setModel(modelo);
         jTable2.setModel(modelo2);
-
-        escalarImagen(jLabelLogo, "logo");
-
+        
+    }
+    
+    private void actualizarHistorial(){
+        MongoCursor<Document> consulta = ticket.find().iterator();
+        
+        int totalRenglones = modelo2.getRowCount();
+        
+        for (int i = 0; i < totalRenglones; i++) {
+            modelo2.removeRow(0);
+        }
+        
+        while (consulta.hasNext()) {
+            ArrayList<Object> doc3 = new ArrayList<>(consulta.next().values());
+            modelo2.addRow(doc3.toArray());
+        }
     }
 
     public final void escalarImagen(JLabel label, String imagen) {
@@ -137,6 +169,13 @@ public class Ventana extends javax.swing.JFrame {
         }
         return false;
     }
+    
+    public void nombresCheckBox(){
+        
+        for (int i = 0; i < 6; i++) {
+            seleccion.get(i).setName((i+1)+"");
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -150,6 +189,8 @@ public class Ventana extends javax.swing.JFrame {
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jPopupMenu2 = new javax.swing.JPopupMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -159,10 +200,6 @@ public class Ventana extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
         jLabelLogo = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        jTextField7 = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jPanel8 = new javax.swing.JPanel();
         jComboBox2 = new javax.swing.JComboBox<>();
@@ -206,13 +243,6 @@ public class Ventana extends javax.swing.JFrame {
         jTextFieldExistencia = new javax.swing.JTextField();
         jButtonInsertar = new javax.swing.JButton();
         jComboBoxTamaño = new javax.swing.JComboBox<>();
-        jPanel15 = new javax.swing.JPanel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -231,7 +261,17 @@ public class Ventana extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jPanel15 = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
 
         jMenuItem1.setText("ACTUALIZAR");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -248,6 +288,14 @@ public class Ventana extends javax.swing.JFrame {
             }
         });
         jPopupMenu1.add(jMenuItem2);
+
+        jMenuItem3.setText("CONSULTAR");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jPopupMenu2.add(jMenuItem3);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -300,17 +348,7 @@ public class Ventana extends javax.swing.JFrame {
 
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel7.setText("PRECIO TOTAL");
-
-        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setText("CANTIDAD A PAGAR");
-
-        jLabel9.setText("MONTO");
-
-        jButton1.setText("PAGAR");
+        jButton1.setText("COMPRAR");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -321,34 +359,17 @@ public class Ventana extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(75, 75, 75)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(271, 271, 271))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addGap(25, 25, 25)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -706,56 +727,6 @@ public class Ventana extends javax.swing.JFrame {
                 .addGap(15, 15, 15))
         );
 
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel13.setText("FAMILIAR:");
-
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel14.setText("MEDIANA:");
-
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel15.setText("PERSONAL:");
-
-        jLabel16.setText("1");
-
-        jLabel17.setText("2");
-
-        jLabel18.setText("3");
-
-        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
-        jPanel15.setLayout(jPanel15Layout);
-        jPanel15Layout.setHorizontalGroup(
-            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel15Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel16)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel18))
-                .addContainerGap(160, Short.MAX_VALUE))
-        );
-        jPanel15Layout.setVerticalGroup(
-            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel15Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel16))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel17))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
-                    .addComponent(jLabel18))
-                .addContainerGap(119, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -763,17 +734,13 @@ public class Ventana extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(274, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(264, 264, 264))
         );
 
@@ -951,8 +918,89 @@ public class Ventana extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTable2.setComponentPopupMenu(jPopupMenu1);
+        jTable2.setComponentPopupMenu(jPopupMenu2);
         jScrollPane2.setViewportView(jTable2);
+
+        jLabel10.setText("PIZZA 1");
+
+        jLabel13.setText("PIZZA 2");
+
+        jLabel14.setText("PIZZA 3");
+
+        jLabel15.setText("PIZZA 4");
+
+        jLabel16.setText("PIZZA 5");
+
+        jLabel17.setText("PIZZA 6");
+
+        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
+        jPanel15.setLayout(jPanel15Layout);
+        jPanel15Layout.setHorizontalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel17)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel16))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel15Layout.setVerticalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jLabel7.setText("EMPLEADO");
+
+        jLabel8.setText("CLIENTE");
+
+        jLabel9.setText("TOTAL PRECIO");
+
+        javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
+        jPanel16.setLayout(jPanel16Layout);
+        jPanel16Layout.setHorizontalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel16Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel16Layout.createSequentialGroup()
+                        .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel16Layout.createSequentialGroup()
+                                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(12, 12, 12)))
+                        .addGap(454, 454, 454))
+                    .addGroup(jPanel16Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+        jPanel16Layout.setVerticalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel16Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(79, 79, 79))
+        );
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -960,31 +1008,26 @@ public class Ventana extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jPanel16, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(329, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("CONSULTAR TICKETS", jPanel5);
-
-        javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
-        jPanel16.setLayout(jPanel16Layout);
-        jPanel16Layout.setHorizontalGroup(
-            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 698, Short.MAX_VALUE)
-        );
-        jPanel16Layout.setVerticalGroup(
-            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 470, Short.MAX_VALUE)
-        );
-
-        jTabbedPane1.addTab("ACTUALIZAR TICKET", jPanel16);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1005,72 +1048,6 @@ public class Ventana extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButtonInsertarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertarActionPerformed
-        //INSERTAR
-
-        try {
-            Document data = new Document();
-            data.put("NOMBRE", jTextFieldNombre.getText());
-            data.put("TAMAÑO", jComboBoxTamaño.getSelectedItem());
-            data.put("PRECIO", Float.parseFloat(jTextFieldPrecio.getText()));
-            data.put("EXISTENCIA", Integer.parseInt(jTextFieldExistencia.getText()));
-
-            pizza.insertOne(data);
-            actualizarTabla();
-            actualizarPedido();
-            jTextFieldNombre.setText("");
-            jComboBoxTamaño.setSelectedItem(1);
-            jTextFieldPrecio.setText("");
-            jTextFieldExistencia.setText("");
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
-        }
-
-    }//GEN-LAST:event_jButtonInsertarActionPerformed
-
-    private void jButtonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActualizarActionPerformed
-        //ACTUALIZAR
-        try {
-            int res = JOptionPane.showConfirmDialog(this, "ESTA SEGURO DE ACTUALIZAR EL REGISTRO?", "Confirmar actualizacion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            if (res == 0) {
-                Document datosActualizados = new Document();
-
-                datosActualizados.put("NOMBRE", jTextField3.getText());
-                datosActualizados.put("TAMAÑO", jComboBox3.getSelectedItem());
-                datosActualizados.put("PRECIO", Float.parseFloat(jTextField6.getText()));
-                datosActualizados.put("EXISTENCIA", Integer.parseInt(jTextField4.getText()));
-
-                UpdateResult resUpdate = pizza.updateOne(filtro, new Document("$set", datosActualizados));
-
-                if (resUpdate.getMatchedCount() == 1) {
-                    jTextField3.setText("");
-                    jComboBox3.setSelectedIndex(1);
-                    jTextField6.setText("");
-                    jTextField4.setText("");
-                    actualizarTabla();
-                    actualizarPedido();
-                } else {
-                    JOptionPane.showMessageDialog(this, "ERROR, NO SE PUDO BORRAR");
-                }
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
-        }
-    }//GEN-LAST:event_jButtonActualizarActionPerformed
-
-    private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
-        //CANCELAR
-
-        filtro.clear();
-
-        jTextField3.setText("");
-        jComboBox3.setSelectedIndex(1);
-        jTextField6.setText("");
-        jTextField4.setText("");
-    }//GEN-LAST:event_jButtonCancelarActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         //ACTUALIZAR POP UP
@@ -1115,88 +1092,70 @@ public class Ventana extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // PAGAR
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void jButtonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCancelarActionPerformed
+        //CANCELAR
 
-    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarTamaño(jComboBox1, jComboBox2);
+        filtro.clear();
+
+        jTextField3.setText("");
+        jComboBox3.setSelectedIndex(1);
+        jTextField6.setText("");
+        jTextField4.setText("");
+    }//GEN-LAST:event_jButtonCancelarActionPerformed
+
+    private void jButtonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActualizarActionPerformed
+        //ACTUALIZAR
+        try {
+            int res = JOptionPane.showConfirmDialog(this, "ESTA SEGURO DE ACTUALIZAR EL REGISTRO?", "Confirmar actualizacion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if (res == 0) {
+                Document datosActualizados = new Document();
+
+                datosActualizados.put("NOMBRE", jTextField3.getText());
+                datosActualizados.put("TAMAÑO", jComboBox3.getSelectedItem());
+                datosActualizados.put("PRECIO", Double.parseDouble(jTextField6.getText()));
+                datosActualizados.put("EXISTENCIA", Integer.parseInt(jTextField4.getText()));
+
+                UpdateResult resUpdate = pizza.updateOne(filtro, new Document("$set", datosActualizados));
+
+                if (resUpdate.getMatchedCount() == 1) {
+                    jTextField3.setText("");
+                    jComboBox3.setSelectedIndex(1);
+                    jTextField6.setText("");
+                    jTextField4.setText("");
+                    actualizarTabla();
+                    actualizarPedido();
+                } else {
+                    JOptionPane.showMessageDialog(this, "ERROR, NO SE PUDO BORRAR");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
         }
+    }//GEN-LAST:event_jButtonActualizarActionPerformed
 
-    }//GEN-LAST:event_jComboBox1ItemStateChanged
+    private void jButtonInsertarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertarActionPerformed
+        //INSERTAR
 
-    private void jComboBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox2ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarPrecioExistencia(jComboBox1, jComboBox2, jLabel11, jLabel12);
+        try {
+            Document data = new Document();
+            data.put("NOMBRE", jTextFieldNombre.getText());
+            data.put("TAMAÑO", jComboBoxTamaño.getSelectedItem());
+            data.put("PRECIO", Double.parseDouble(jTextFieldPrecio.getText()));
+            data.put("EXISTENCIA", Integer.parseInt(jTextFieldExistencia.getText()));
+
+            pizza.insertOne(data);
+            actualizarTabla();
+            actualizarPedido();
+            jTextFieldNombre.setText("");
+            jComboBoxTamaño.setSelectedItem(1);
+            jTextFieldPrecio.setText("");
+            jTextFieldExistencia.setText("");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
         }
-    }//GEN-LAST:event_jComboBox2ItemStateChanged
-
-    private void jComboBox4ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox4ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarTamaño(jComboBox4, jComboBox5);
-        }
-    }//GEN-LAST:event_jComboBox4ItemStateChanged
-
-    private void jComboBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox5ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarPrecioExistencia(jComboBox4, jComboBox5, jLabel19, jLabel20);
-        }
-    }//GEN-LAST:event_jComboBox5ItemStateChanged
-
-    private void jComboBox6ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox6ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarPrecioExistencia(jComboBox7, jComboBox6, jLabel21, jLabel22);
-        }
-    }//GEN-LAST:event_jComboBox6ItemStateChanged
-
-    private void jComboBox7ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox7ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarTamaño(jComboBox7, jComboBox6);
-        }
-    }//GEN-LAST:event_jComboBox7ItemStateChanged
-
-    private void jComboBox8ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox8ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarPrecioExistencia(jComboBox9, jComboBox8, jLabel23, jLabel24);
-        }
-    }//GEN-LAST:event_jComboBox8ItemStateChanged
-
-    private void jComboBox9ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox9ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarTamaño(jComboBox9, jComboBox8);
-        }
-    }//GEN-LAST:event_jComboBox9ItemStateChanged
-
-    private void jComboBox10ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox10ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarTamaño(jComboBox10, jComboBox11);
-        }
-    }//GEN-LAST:event_jComboBox10ItemStateChanged
-
-    private void jComboBox11ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox11ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarPrecioExistencia(jComboBox10, jComboBox11, jLabel25, jLabel26);
-        }
-    }//GEN-LAST:event_jComboBox11ItemStateChanged
-
-    private void jComboBox12ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox12ItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == 1) {
-            actualizarPrecioExistencia(jComboBox13, jComboBox12, jLabel28, jLabel27);
-        }
-    }//GEN-LAST:event_jComboBox12ItemStateChanged
+    }//GEN-LAST:event_jButtonInsertarActionPerformed
 
     private void jComboBox13ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox13ItemStateChanged
         // TODO add your handling code here:
@@ -1205,6 +1164,171 @@ public class Ventana extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jComboBox13ItemStateChanged
 
+    private void jComboBox12ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox12ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jCheckBox6, jComboBox13, jComboBox12, jLabel28, jLabel27);
+        }
+    }//GEN-LAST:event_jComboBox12ItemStateChanged
+
+    private void jComboBox11ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox11ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jCheckBox5, jComboBox10, jComboBox11, jLabel25, jLabel26);
+        }
+    }//GEN-LAST:event_jComboBox11ItemStateChanged
+
+    private void jComboBox10ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox10ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox10, jComboBox11);
+        }
+    }//GEN-LAST:event_jComboBox10ItemStateChanged
+
+    private void jComboBox9ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox9ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox9, jComboBox8);
+        }
+    }//GEN-LAST:event_jComboBox9ItemStateChanged
+
+    private void jComboBox8ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox8ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jCheckBox4, jComboBox9, jComboBox8, jLabel23, jLabel24);
+        }
+    }//GEN-LAST:event_jComboBox8ItemStateChanged
+
+    private void jComboBox7ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox7ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox7, jComboBox6);
+        }
+    }//GEN-LAST:event_jComboBox7ItemStateChanged
+
+    private void jComboBox6ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox6ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jCheckBox3, jComboBox7, jComboBox6, jLabel21, jLabel22);
+        }
+    }//GEN-LAST:event_jComboBox6ItemStateChanged
+
+    private void jComboBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox5ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jCheckBox2, jComboBox4, jComboBox5, jLabel19, jLabel20);
+        }
+    }//GEN-LAST:event_jComboBox5ItemStateChanged
+
+    private void jComboBox4ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox4ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox4, jComboBox5);
+        }
+    }//GEN-LAST:event_jComboBox4ItemStateChanged
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarTamaño(jComboBox1, jComboBox2);
+        }
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jComboBox2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox2ItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == 1) {
+            actualizarPrecioExistencia(jCheckBox1, jComboBox1, jComboBox2, jLabel11, jLabel12);
+        }
+    }//GEN-LAST:event_jComboBox2ItemStateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // PAGAR
+        String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
+        doc = new Document("EMPLEADO", jTextField1.getText());
+        doc.append("CLIENTE", jTextField2.getText());
+        doc.append("FECHA", fecha);
+        j = 1;
+        precioTotal = 0;
+        for (int i = 0; i < 6; i++) {
+            if (seleccion.get(i).isSelected()) {
+                switch(seleccion.get(i).getName()){
+                    case "1":
+                        insertarDoc(jComboBox1, jComboBox2, jLabel11, jLabel12);
+                    break;
+                    case "2":
+                        insertarDoc(jComboBox4, jComboBox5, jLabel19, jLabel20);
+                    break;
+                    case "3":
+                        insertarDoc(jComboBox7, jComboBox6, jLabel21, jLabel22);
+                    break;
+                    case "4":
+                        insertarDoc(jComboBox9, jComboBox8, jLabel23, jLabel24);
+                    break;
+                    case "5":
+                        insertarDoc(jComboBox10, jComboBox11, jLabel25, jLabel26);
+                    break;
+                    case "6":
+                        insertarDoc(jComboBox13, jComboBox12, jLabel28, jLabel27);
+                    break;
+                }
+            }
+        }
+        doc.append("TOTAL", precioTotal);
+        ticket.insertOne(doc);
+        
+        actualizarTabla();
+        //actualizarPedido();
+        actualizarHistorial();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // CONSULTAR HISTORIAL POR ID
+        int renglonSeleccionado = jTable2.getSelectedRow();
+
+        if (renglonSeleccionado == -1) {
+            JOptionPane.showMessageDialog(this, "ERROR, DEBES SELECCIONAR UN RENGLON");
+            return;
+        }
+
+        String id = modelo2.getValueAt(renglonSeleccionado, 0).toString();
+        
+        filtro = new Document("_id", new ObjectId(id));
+        Document resultado = ticket.find(filtro).first();
+        jLabel7.setText(resultado.getString("EMPLEADO"));
+        jLabel8.setText(resultado.getString("CLIENTE"));
+        jLabel9.setText(resultado.getDouble("TOTAL").toString());
+        
+        jLabel10.setText(resultado.getString("PIZZA_1"));
+        jLabel13.setText(resultado.getString("PIZZA_2"));
+        jLabel14.setText(resultado.getString("PIZZA_3"));
+        jLabel15.setText(resultado.getString("PIZZA_4"));
+        jLabel16.setText(resultado.getString("PIZZA_5"));
+        jLabel17.setText(resultado.getString("PIZZA_6"));
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    public void insertarDoc(JComboBox nombre, JComboBox tamaño, JLabel precio, JLabel existencia){
+        precioTotal += Float.parseFloat(precio.getText());
+        
+        doc.append("PIZZA_"+j, nombre.getSelectedItem());
+        doc.append("TAMAÑO_"+j, tamaño.getSelectedItem());
+        doc.append("PRECIO_"+j, Double.parseDouble(precio.getText()));
+        
+        Document docBuscar = new Document();
+        
+        docBuscar.append("NOMBRE", nombre.getSelectedItem());
+        docBuscar.append("TAMAÑO", tamaño.getSelectedItem());
+        docBuscar.append("PRECIO", Double.parseDouble(precio.getText()));
+        Document doc3 =  pizza.find(docBuscar).first();
+        Document nuevaExistencia = new Document("EXISTENCIA", (Integer.parseInt(existencia.getText())-1));
+        
+        pizza.updateOne(doc3, new Document("$set", nuevaExistencia));
+        
+        j++;
+        
+        existencia.setText((Integer.parseInt(existencia.getText())-1)+"");
+        
+    }
+    
     public void actualizarTamaño(JComboBox comboNombre, JComboBox comboTamaño) {
         comboTamaño.removeAllItems();
         MongoCursor<Document> consulta = pizza.find(new Document("NOMBRE", comboNombre.getSelectedItem())).iterator();
@@ -1214,11 +1338,11 @@ public class Ventana extends javax.swing.JFrame {
         }
     }
 
-    public void actualizarPrecioExistencia(JComboBox comboNombre, JComboBox comboTamaño, JLabel labelPrecio, JLabel jLabelExistencia) {
+    public void actualizarPrecioExistencia(JCheckBox check, JComboBox comboNombre, JComboBox comboTamaño, JLabel labelPrecio, JLabel jLabelExistencia) {
         Document consulta = new Document("NOMBRE", comboNombre.getSelectedItem()).append("TAMAÑO", comboTamaño.getSelectedItem());
-        Document doc = pizza.find(consulta).first();
-        labelPrecio.setText(doc.getDouble("PRECIO").toString());
-        jLabelExistencia.setText(doc.getInteger("EXISTENCIA").toString());
+        Document doc2 = pizza.find(consulta).first();
+        labelPrecio.setText(doc2.getDouble("PRECIO").toString());
+        jLabelExistencia.setText(doc2.getInteger("EXISTENCIA").toString());
     }
 
     /**
@@ -1282,6 +1406,7 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox9;
     private javax.swing.JComboBox<String> jComboBoxTamaño;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -1289,7 +1414,6 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
@@ -1311,6 +1435,7 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelLogo;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -1328,6 +1453,7 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -1338,7 +1464,6 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextFieldExistencia;
     private javax.swing.JTextField jTextFieldNombre;
     private javax.swing.JTextField jTextFieldPrecio;
